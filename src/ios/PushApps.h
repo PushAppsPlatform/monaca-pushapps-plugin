@@ -6,15 +6,11 @@
 //  Copyright © 2016 PushApps. All rights reserved.
 //
 
-#import <UserNotifications/UserNotifications.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-
-#import "PANotificationServiceExtension.h"
-#import "PANotificationContentExtension.h"
 #import "PATag.h"
 
-#define SDK_VERSION @"1.0.16"
+#define SDK_VERSION @"1.0.9"
 
 //! Project version number for PushApps.
 FOUNDATION_EXPORT double PushAppsVersionNumber;
@@ -35,28 +31,11 @@ FOUNDATION_EXPORT const unsigned char PushAppsVersionString[];
 
 @end
 
-// Notification click dictionary keys
-extern NSString * const PANotificationKeySelectedArticle;
-
-// Notification click identifiers
-extern NSString * const PANotificationClickTypeNone;
-extern NSString * const PANotificationClickTypeDefault;
-extern NSString * const PANotificationClickTypeCancelled;
-extern NSString * const PANotificationClickTypePollQuestion;
-extern NSString * const PANotificationClickTypePollAnswer;
-extern NSString * const PANotificationClickTypeActionButtonCustom;
-extern NSString * const PANotificationClickTypeActionButtonReadArticle;
-extern NSString * const PANotificationClickTypeActionButtonMoreRecommendations;
-
-extern NSString * const PACategoryNotificationContent;
-extern NSString * const PACategoryPollNotificationContent;
-extern NSString * const PACategoryRecommendationsNotificationContent;
-
 // In this header, you should import all the public headers of your framework using statements like #import <PushApps/PublicHeader.h>
 
 typedef void (^PASimpleCompletionBlock)();
 
-typedef void (^PANotificationClickHandlerBlock)(NSDictionary *contentInfo);
+typedef void (^PANotificationContentHandlerBlock)(NSString *articleUrl);
 
 typedef void (^PACompletionBlock)(id object, NSError *error);
 
@@ -92,21 +71,18 @@ typedef void (^getCampaignDetailsCompletion)(NSDictionary *campaignDetails, NSEr
 
 + (NSString *)getDeviceId;
 
-+ (NSString *)getPushToken;
-
 + (NSString *)getSdkVersion;
 
 // register to the Pushapps service
-+ (void)registerDeviceWithSdkKey:(NSString *)sdkKey andAppGroupsName:(NSString *)appGroupName;
-+ (void)registerDeviceWithSdkKey:(NSString *)sdkKey andAppGroupsName:(NSString *)appGroupName withNotificationClickHandler:(PANotificationClickHandlerBlock)handler;
++ (void)registerDeviceWithSdkKey:(NSString*)sdkKey;
 
 // send APNS device token to the Pushapps service
 + (void)setDevicePushToken:(NSData *)deviceToken;
 
 + (void)failedToRegisterToPushNotificationsWithError:(NSError *)error;
 
-// handle user action. return YES if handles or NO if not a PushApps notification
-+ (BOOL)handleNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(PASimpleCompletionBlock)completionHandler;
+// set call back block to handle campaign content
++ (void)setNotificationContentHandler:(PANotificationContentHandlerBlock)handler;
 
 + (void)handleReceivedNotification:(NSDictionary *)userInfo;
 
@@ -128,21 +104,5 @@ typedef void (^getCampaignDetailsCompletion)(NSDictionary *campaignDetails, NSEr
 + (void)getTags:(PACompletionBlock)completion;
 
 + (NSString *)getUrlFromNotificationInfo:(NSDictionary *)userInfo;
-
-+ (void)clearApplicationBadge;
-
-+ (BOOL)payloadContainsPANotification:(NSDictionary *)payload;
-
-// Outbrain
-+ (void)setOutbrainKey:(NSString *)key;
-+ (NSString *)getOutbrainKey;
-
-// Logger
-typedef NS_ENUM(NSUInteger, PA_LOG_LEVEL) {
-    PA_LL_NONE, PA_LL_FATAL, PA_LL_ERROR, PA_LL_WARN, PA_LL_INFO, PA_LL_DEBUG, PA_LL_VERBOSE
-};
-
-+ (void)setLogLevel:(PA_LOG_LEVEL)logLevel visualLevel:(PA_LOG_LEVEL)visualLogLevel;
-+ (void)pushapps_Log:(PA_LOG_LEVEL)logLevel message:(NSString *) message;
 
 @end
